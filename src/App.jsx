@@ -7,6 +7,7 @@ import { useState } from 'react'
 function App() {
   const [creating, setCreating] = useState(false);
   const [projects, setProjects] = useState([]);
+  const [trash, setTrash] = useState([]);
 
   const [selectedProject, setSelectedProject] = useState(null);
 
@@ -26,6 +27,23 @@ function App() {
     setSelectedProject(project);
   }
 
+  function closeProject() {
+    setSelectedProject(null);
+  }
+
+  function deleteProject(title) {
+    const trashProject = projects.find((project) => project.title === title);
+    if (!trashProject) return;
+
+    setTrash([...trash, trashProject]);
+
+    setProjects(projects.filter((project) => project.title !== title))
+
+    if (selectedProject?.title === title) {
+      setSelectedProject(null);
+    }
+  }
+
   return (
     <>
     <Sidebar projects={projects} handleProject={handleProject} />
@@ -43,7 +61,7 @@ function App() {
 
       {creating ? (
         <PopUp handleCreate={handleCreate} />
-      ) : <Project selectedProject={selectedProject} />}
+      ) : <Project selectedProject={selectedProject} closeProject={closeProject} deleteProject={deleteProject} />}
     </div>
     </>
   );
