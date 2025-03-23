@@ -1,7 +1,4 @@
 const pg = require('pg');
-const dotenv = require('dotenv');
-
-dotenv.config();
 
 const db = new pg.Client(
     {
@@ -15,7 +12,7 @@ const db = new pg.Client(
 
 db
   .connect()
-  .then(() => console.log("Connected to PostgreSQL Database"))
+  .then(() => console.log("Connected to the database"))
   .catch((err) => console.error("Database Connection Error:", err));
 
 module.exports = db;

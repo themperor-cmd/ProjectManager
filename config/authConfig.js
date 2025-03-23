@@ -1,9 +1,6 @@
 const passport = require('passport');
-const dotenv = require('dotenv');
 const db = require('../config/db');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-
-dotenv.config();
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -11,11 +8,11 @@ passport.use(new GoogleStrategy({
     callbackURL: "/auth/google/callback",
 }, async (accessToken, refreshToken, profile, cb) => {
     try {
-        let user = await db.Query('SELECT * FROM users WHERE oauth_id = $1', [profile.id]);
+        let user = await db.query('SELECT * FROM users WHERE oauth_id = $1', [profile.id]);
 
         const tableName = `projects_${profile.id.replace(/[^a-zA-Z0-9]/g, "_")}`;
         if (!user.rows.length) {
-            const newUser = db.Query('INSERT INTO users (name, email, oauth_id) VALUES ($1, $2, $3) RETURNING *', [profile.displayName, profile.emails[0].value, profile.id]);
+            const newUser = db.query('INSERT INTO users (name, email, oauth_id) VALUES ($1, $2, $3) RETURNING *', [profile.displayName, profile.emails[0].value, profile.id]);
             user = newUser;
 
             await db.Query(`
@@ -41,7 +38,7 @@ passport.serializeUser(function(user, cb) {
 
 passport.deserializeUser(async (id, cb) => {
     try {
-      const user = await db.Query("SELECT * FROM users WHERE oauth_id = $1", [id]);
+      const user = await db.query("SELECT * FROM users WHERE oauth_id = $1", [id]);
       cb(null, user.rows[0]);
     } catch (err) {
       cb(err, null);
