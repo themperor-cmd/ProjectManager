@@ -23,7 +23,6 @@ passport.use(new GoogleStrategy({
                     id SERIAL PRIMARY KEY,
                     title VARCHAR(255) NOT NULL,
                     description TEXT,
-                    status VARCHAR(50) DEFAULT 'pending',
                     created_at TIMESTAMP DEFAULT NOW()
                 );
             `);
@@ -37,7 +36,7 @@ passport.use(new GoogleStrategy({
 }))
 
 passport.serializeUser(function(user, cb) {
-    cb(null, user.oauth_id); 
+    cb(null, user.oauth_id);
 });
 
 passport.deserializeUser(async (id, cb) => {

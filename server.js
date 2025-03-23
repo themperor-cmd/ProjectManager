@@ -3,6 +3,7 @@ const passport = require("passport");
 const session = require("express-session");
 const dotenv = require("dotenv");
 const {login, callBack, logout} = require('./controllers/authController');
+const {getProjects, createProjects, deletedProjects} = require('./controllers/projectController');
 
 const app = express();
 
@@ -19,11 +20,16 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/projects', (req, res) => {
-    res.send("Hello")
-});
+const isAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated) {
+        return next();
+    }
+    res.status(401).json({ message: "Unauthorized user, Please log in."});
+};
 
-app.post('/projects', createProjects);
+app.get('/projects', isAuthenticated, getProjects);
+app.post('/projects',isAuthenticated, createProjects);
+app.delete('/project/:id', isAuthenticated, deletedProjects);
 
 app.get('/auth/google', login);
 app.get("/auth/google/callback", callBack);
