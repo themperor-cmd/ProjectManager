@@ -12,10 +12,10 @@ passport.use(new GoogleStrategy({
 
         const tableName = `projects_${profile.id.replace(/[^a-zA-Z0-9]/g, "_")}`;
         if (!user.rows.length) {
-            const newUser = db.query('INSERT INTO users (name, email, oauth_id) VALUES ($1, $2, $3) RETURNING *', [profile.displayName, profile.emails[0].value, profile.id]);
+            const newUser = await db.query('INSERT INTO users (name, email, oauth_id) VALUES ($1, $2, $3) RETURNING *', [profile.displayName, profile.emails[0].value, profile.id]);
             user = newUser;
 
-            await db.Query(`
+            await db.query(`
                 CREATE TABLE IF NOT EXISTS ${tableName} (
                     id SERIAL PRIMARY KEY,
                     title VARCHAR(255) NOT NULL,
